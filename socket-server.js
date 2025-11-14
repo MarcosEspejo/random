@@ -47,10 +47,28 @@ function removeFromWaiting(socketId) {
 }
 
 export function initializeSocketServer(httpServer) {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://random-h18vps637-marcos-projects-07c9c421.vercel.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean);
+
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
-      methods: ['GET', 'POST']
+      origin: (origin, callback) => {
+        // Permitir requests sin origin (mobile apps, curl, etc)
+        if (!origin) return callback(null, true);
+        
+        // Verificar si el origin está en la lista permitida o es un dominio de Vercel
+        if (allowedOrigins.includes(origin) || origin.includes('.vercel.app')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      methods: ['GET', 'POST'],
+      credentials: true
     }
   });
 

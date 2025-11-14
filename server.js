@@ -11,6 +11,14 @@ const base = process.env.BASE || '/'
 const host = process.env.HOST || '0.0.0.0'
 const ABORT_DELAY = 10000
 
+// Configurar CORS para permitir Vercel
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://random-h18vps637-marcos-projects-07c9c421.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean)
+
 // Cached production assets
 const templateHtml = isProduction
   ? await fs.readFile('./dist/client/index.html', 'utf-8')
@@ -19,6 +27,21 @@ const templateHtml = isProduction
 // Create http server
 const app = express()
 const httpServer = createServer(app)
+
+// Configurar CORS para Express
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200)
+  }
+  next()
+})
 
 // Initialize Socket.IO
 initializeSocketServer(httpServer)

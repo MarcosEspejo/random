@@ -1,26 +1,26 @@
 # Script para activar modo mantenimiento
 Write-Host "Activando modo mantenimiento..." -ForegroundColor Yellow
 
-# Configurar variable de entorno en Vercel
-Write-Host "Agregando variable VITE_MAINTENANCE_MODE=true en Vercel..." -ForegroundColor Cyan
+# Verificar si ya está en mantenimiento
+if (Test-Path "index.html.backup") {
+    Write-Host "Ya esta en modo mantenimiento" -ForegroundColor Red
+    exit 1
+}
 
-# Crear archivo temporal con el valor
-"true" | Out-File -FilePath ".\.maintenance_mode" -NoNewline -Encoding utf8
+# Hacer backup del index actual
+Copy-Item -Path "index.html" -Destination "index.html.backup" -Force
+Write-Host "Backup creado: index.html.backup" -ForegroundColor Green
 
-# Agregar variable en Vercel para todos los entornos
-Get-Content ".\.maintenance_mode" | vercel env add VITE_MAINTENANCE_MODE production
-Get-Content ".\.maintenance_mode" | vercel env add VITE_MAINTENANCE_MODE preview
-Get-Content ".\.maintenance_mode" | vercel env add VITE_MAINTENANCE_MODE development
+# Reemplazar con página de mantenimiento
+Copy-Item -Path "maintenance.html" -Destination "index.html" -Force
+Write-Host "Pagina de mantenimiento activada" -ForegroundColor Green
 
-# Limpiar archivo temporal
-Remove-Item -Path ".\.maintenance_mode" -Force -ErrorAction SilentlyContinue
-
-Write-Host "Variable de entorno configurada" -ForegroundColor Green
-
-# Redesplegar en producción
+# Subir cambios a Git
 Write-Host ""
-Write-Host "Desplegando cambios..." -ForegroundColor Cyan
-vercel --prod
+Write-Host "Subiendo cambios..." -ForegroundColor Cyan
+git add index.html index.html.backup
+git commit -m "Activar modo mantenimiento"
+git push
 
 Write-Host ""
 Write-Host "Modo mantenimiento activado!" -ForegroundColor Green

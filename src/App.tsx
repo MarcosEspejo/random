@@ -12,6 +12,45 @@ import CountryFilter from './components/CountryFilter';
 import { useSocket } from './hooks/useSocket';
 
 function App() {
+  // Verificar modo mantenimiento
+  const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+
+  if (isMaintenanceMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center p-4">
+        <AnimatedBackground />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="relative z-10 max-w-2xl w-full bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl text-white text-center"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-8xl mb-6"
+          >
+            🔧
+          </motion.div>
+          <h1 className="text-4xl font-bold mb-4">En Mantenimiento</h1>
+          <p className="text-xl mb-6 opacity-90">
+            Estamos realizando mejoras para ofrecerte una mejor experiencia.
+            Volveremos pronto con nuevas características y optimizaciones.
+          </p>
+          <div className="bg-white/10 rounded-2xl p-6 mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Mientras tanto...</h2>
+            <ul className="text-lg space-y-2">
+              <li>✓ Estamos mejorando la estabilidad</li>
+              <li>✓ Optimizando el rendimiento</li>
+              <li>✓ Agregando nuevas funciones</li>
+            </ul>
+          </div>
+          <p className="mt-8 text-sm opacity-70">
+            Tiempo estimado: Pronto estaremos de vuelta
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
   const {
     isConnected,
     isMatched,

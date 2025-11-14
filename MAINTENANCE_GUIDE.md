@@ -1,12 +1,26 @@
 # 🔧 Guía de Mantenimiento
 
-## Opciones para poner la app en mantenimiento:
+## ✅ Forma más fácil - Variable de entorno en Vercel:
 
-### **Opción 1: Pausar en Vercel (Recomendado)**
-1. Ve a https://vercel.com/marcos-projects-07c9c421/random
-2. Settings → General
-3. Busca "Pause Deployments" o "Disable Project"
-4. La app dejará de estar disponible temporalmente
+### Para ACTIVAR modo mantenimiento:
+1. Ve a https://vercel.com/marcos-projects-07c9c421/random/settings/environment-variables
+2. Clic en **"Add New"**
+3. Agrega:
+   - **Name**: `VITE_MAINTENANCE_MODE`
+   - **Value**: `true`
+   - Marca: **Production**, **Preview**, **Development**
+4. Clic en **"Save"**
+5. Ve a la terminal y ejecuta: `vercel --prod`
+
+### Para DESACTIVAR modo mantenimiento:
+1. Ve a la misma página de variables de entorno
+2. Encuentra `VITE_MAINTENANCE_MODE`
+3. Haz clic en los 3 puntos → **"Delete"**
+4. En la terminal ejecuta: `vercel --prod`
+
+---
+
+## Otras opciones:
 
 ### **Opción 2: Pausar Railway (Desactiva el chat)**
 1. Ve a https://railway.app/dashboard

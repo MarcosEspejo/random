@@ -1,21 +1,18 @@
 # Script para restaurar servicio normal
 Write-Host "🔄 Restaurando servicio..." -ForegroundColor Cyan
 
-# Verificar si hay backup
-if (-not (Test-Path "index.html.backup")) {
-    Write-Host "❌ No hay backup. La app ya está activa." -ForegroundColor Red
-    exit 1
-}
+# Eliminar variable de entorno en Vercel
+Write-Host "📝 Eliminando variable VITE_MAINTENANCE_MODE de Vercel..." -ForegroundColor Cyan
 
-# Restaurar index original
-Move-Item -Path "index.html.backup" -Destination "index.html" -Force
-Write-Host "✅ Servicio restaurado" -ForegroundColor Green
+vercel env rm VITE_MAINTENANCE_MODE production
+vercel env rm VITE_MAINTENANCE_MODE preview
+vercel env rm VITE_MAINTENANCE_MODE development
 
-# Subir cambios a Git
-Write-Host "`n📤 Subiendo cambios..." -ForegroundColor Cyan
-git add .
-git commit -m "✅ Restaurar servicio normal"
-git push
+Write-Host "✅ Variable de entorno eliminada" -ForegroundColor Green
+
+# Redesplegar en producción
+Write-Host "`n🚀 Desplegando cambios..." -ForegroundColor Cyan
+vercel --prod
 
 Write-Host "`n✅ Servicio completamente restaurado!" -ForegroundColor Green
 Write-Host "🌐 Tu app está de nuevo en línea" -ForegroundColor Yellow

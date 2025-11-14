@@ -14,6 +14,12 @@ import { useSocket } from './hooks/useSocket';
 function App() {
   // Verificar modo mantenimiento
   const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+  
+  // Log para debug (solo en desarrollo)
+  if (import.meta.env.DEV) {
+    console.log('VITE_MAINTENANCE_MODE:', import.meta.env.VITE_MAINTENANCE_MODE);
+    console.log('isMaintenanceMode:', isMaintenanceMode);
+  }
 
   if (isMaintenanceMode) {
     return (

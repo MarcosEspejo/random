@@ -27,7 +27,6 @@
 @layer components {
   .chat-bubble {
     @apply rounded-2xl px-4 py-3;
-    max-width: 75%;
     min-width: 80px;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -35,11 +34,11 @@
   }
   
   .chat-bubble-sent {
-    @apply bg-accent-primary text-white;
+    @apply bg-gradient-to-br from-cyan-500 to-cyan-600 text-white shadow-sm;
   }
   
   .chat-bubble-received {
-    @apply bg-dark-100/80 text-gray-100 border border-gray-800;
+    @apply bg-dark-100/80 text-gray-100 border border-gray-800/70;
   }
   
   .input-field {
@@ -92,4 +91,21 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Animation delays */
+.delay-150 {
+  animation-delay: 0.15s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.delay-700 {
+  animation-delay: 0.7s;
 }

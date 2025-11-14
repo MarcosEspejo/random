@@ -62,12 +62,20 @@ export const useSocket = (): UseSocketReturn => {
 
   const connect = useCallback(() => {
     console.log('🟢 Iniciando conexión a:', SOCKET_URL);
+    
+    // Si ya existe una conexión, desconectarla primero
+    if (socket) {
+      socket.close();
+    }
+    
     const newSocket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
+      timeout: 10000,
+      forceNew: true,
     });
 
     newSocket.on('connect', () => {

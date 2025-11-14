@@ -152,32 +152,57 @@ function App() {
               exit={{ opacity: 0, scale: 0.9 }}
               className="flex-1 flex items-center justify-center"
             >
-              <div className="w-full max-w-4xl space-y-6">
+              <div className="w-full max-w-4xl space-y-8 px-4">
                 <div className="text-center space-y-6">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="inline-block"
-                  >
-                    <BsChatDots className="text-8xl text-accent-primary" />
-                  </motion.div>
-                  <h2 className="text-3xl font-bold gradient-text">
-                    Listo para conocer a alguien nuevo
-                  </h2>
-                  <p className="text-gray-400 max-w-md mx-auto">
-                    Conecta con personas aleatorias de todo el mundo. Haz clic en el botón para comenzar.
-                  </p>
+                  {/* Icon */}
+                  <div className="inline-block mb-4">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-cyan-500/10 rounded-full blur-xl"></div>
+                      <div className="relative bg-gradient-to-br from-cyan-500 to-cyan-600 p-6 rounded-2xl shadow-lg">
+                        <BsChatDots className="text-6xl text-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <div className="space-y-3">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                      <span className="text-white">Listo para </span>
+                      <span className="bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 bg-clip-text text-transparent">
+                        conectar
+                      </span>
+                    </h2>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="h-px w-8 bg-gradient-to-r from-transparent to-cyan-500"></div>
+                      <p className="text-gray-400 text-base sm:text-lg max-w-md">
+                        Encuentra personas aleatorias de todo el mundo
+                      </p>
+                      <div className="h-px w-8 bg-gradient-to-l from-transparent to-cyan-500"></div>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex justify-center gap-4 text-sm">
+                    <div className="glass-effect rounded-lg px-4 py-2 border-cyan-500/20">
+                      <div className="text-cyan-400 font-semibold">{onlineUsers}</div>
+                      <div className="text-gray-500 text-xs">usuarios activos</div>
+                    </div>
+                    <div className="glass-effect rounded-lg px-4 py-2 border-cyan-500/20">
+                      <div className="text-cyan-400 font-semibold">100%</div>
+                      <div className="text-gray-500 text-xs">anónimo</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Filtro de países */}
                 {userCountry && (
-                  <>
+                  <div className="space-y-4">
                     <button
                       onClick={() => setShowCountryFilter(!showCountryFilter)}
-                      className="btn-secondary mx-auto flex items-center gap-2 text-sm touch-manipulation cursor-pointer"
+                      className="mx-auto flex items-center gap-2 text-sm glass-effect rounded-lg px-4 py-2.5 text-gray-300 border border-gray-700 hover:border-cyan-500 hover:text-cyan-400 transition-all duration-300"
                     >
                       <FiUsers />
-                      {showCountryFilter ? 'Ocultar filtro' : 'Filtrar por país'}
+                      {showCountryFilter ? 'Ocultar filtro de país' : 'Filtrar por país'}
                     </button>
 
                     <AnimatePresence>
@@ -195,21 +220,31 @@ function App() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </>
+                  </div>
                 )}
 
+                {/* CTA Button */}
                 <div className="text-center">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => searchMatch(selectedCountry || undefined)}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      searchMatch(selectedCountry || undefined);
-                    }}
-                    className="btn-primary inline-flex items-center gap-2 touch-manipulation active:scale-95 cursor-pointer"
+                    className="group relative bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-white text-lg font-semibold px-10 py-4 rounded-xl inline-flex items-center gap-3 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-300"
                   >
-                    <FiUsers className="text-xl" />
-                    Buscar Conversación
-                  </button>
+                    <FiUsers className="text-2xl group-hover:scale-110 transition-transform duration-300" />
+                    <span>Buscar Conversación</span>
+                    <div className="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                  </motion.button>
+                  
+                  {selectedCountry && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-sm text-gray-500 mt-3"
+                    >
+                      Buscando personas de: <span className="text-cyan-400 font-medium">{selectedCountry}</span>
+                    </motion.p>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -220,91 +255,61 @@ function App() {
           )}
 
           {isMatched && (
-            <motion.div
+            <div
               key="chat"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
               className="flex-1 flex flex-col space-y-4"
             >
               {/* Status Bar */}
-              <motion.div
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="glass-effect rounded-xl p-3 md:p-4 flex flex-col md:flex-row items-center justify-between gap-3"
-              >
+              <div className="glass-effect rounded-xl p-3 md:p-4 flex flex-col md:flex-row items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
                   <div>
-                    <span className="text-xs md:text-sm font-medium block">
+                    <span className="text-xs md:text-sm font-medium text-gray-200 block">
                       Conectado con un extraño
                     </span>
                     {partnerCountry && (
-                      <span className="text-xs text-accent-primary">
+                      <span className="text-xs text-cyan-400">
                         📍 {partnerCountry}
                       </span>
                     )}
                   </div>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <button
                     onClick={skipPartner}
                     className="btn-secondary flex items-center justify-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2 flex-1 md:flex-initial"
                   >
                     <FiSkipForward />
                     <span className="hidden sm:inline">Siguiente</span>
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  </button>
+                  <button
                     onClick={disconnect}
                     className="btn-danger flex items-center justify-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2 flex-1 md:flex-initial"
                   >
                     <FiLogOut />
                     <span className="hidden sm:inline">Salir</span>
-                  </motion.button>
+                  </button>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Messages Container */}
               <div className="flex-1 glass-effect rounded-xl p-4 md:p-6 overflow-y-auto min-h-[350px] md:min-h-[450px] max-h-[550px] md:max-h-[650px]">
-                <div className="space-y-4">
-                  <AnimatePresence initial={false}>
-                    {messages.map((message) => (
-                      <ChatMessage key={message.id} message={message} />
-                    ))}
-                  </AnimatePresence>
+                <div className="space-y-3">
+                  {messages.map((message) => (
+                    <ChatMessage key={message.id} message={message} />
+                  ))}
                   
                   {/* Indicador de escribiendo */}
                   {isPartnerTyping && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="flex justify-start"
-                    >
-                      <div className="bg-dark-100 rounded-2xl px-4 py-3">
-                        <div className="flex gap-1">
-                          <motion.div
-                            className="w-2 h-2 bg-accent-primary rounded-full"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-                          />
-                          <motion.div
-                            className="w-2 h-2 bg-accent-primary rounded-full"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                          />
-                          <motion.div
-                            className="w-2 h-2 bg-accent-primary rounded-full"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                          />
+                    <div className="flex justify-start">
+                      <div className="bg-dark-100/80 border border-gray-800 rounded-2xl px-4 py-3">
+                        <div className="flex gap-1.5">
+                          <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></div>
+                          <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                          <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
                   
                   <div ref={messagesEndRef} />
@@ -312,9 +317,7 @@ function App() {
               </div>
 
               {/* Input Area */}
-              <motion.form
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
+              <form
                 onSubmit={handleSendMessage}
                 className="glass-effect rounded-xl p-3 md:p-4"
               >
@@ -355,19 +358,17 @@ function App() {
                     wrap="soft"
                     autoFocus
                   />
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <button
                     type="submit"
                     className="btn-primary flex items-center gap-2 px-4 md:px-6 h-[44px]"
                     disabled={!messageInput.trim()}
                   >
                     <FiSend />
                     <span className="hidden sm:inline">Enviar</span>
-                  </motion.button>
+                  </button>
                 </div>
-              </motion.form>
-            </motion.div>
+              </form>
+            </div>
           )}
         </AnimatePresence>
       </main>

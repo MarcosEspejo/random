@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    @apply bg-dark-300 text-gray-100;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+  }
+
+  button, a, input, textarea {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
+@layer components {
+  .chat-bubble {
+    @apply rounded-2xl px-4 py-3;
+    max-width: 75%;
+    min-width: 80px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  .chat-bubble-sent {
+    @apply bg-accent-primary text-white;
+  }
+  
+  .chat-bubble-received {
+    @apply bg-dark-100/80 text-gray-100 border border-gray-800;
+  }
+  
+  .input-field {
+    @apply bg-dark-100/60 border border-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-accent-primary focus:bg-dark-100 transition-colors duration-200 touch-manipulation;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.5;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+  
+  .btn-primary {
+    @apply bg-accent-primary text-white font-medium px-6 py-3 rounded-lg hover:bg-accent-primary/90 active:bg-accent-primary/80 transition-colors duration-200 shadow-sm touch-manipulation;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-100/50 text-gray-300 font-medium px-5 py-2.5 rounded-lg border border-gray-700 hover:border-accent-primary hover:text-accent-primary active:bg-dark-100 transition-colors duration-200 touch-manipulation;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600/10 text-red-400 font-medium px-5 py-2.5 rounded-lg border border-red-600/30 hover:bg-red-600/20 hover:border-red-500 active:bg-red-600/30 transition-colors duration-200 touch-manipulation;
+  }
+  
+  .glass-effect {
+    @apply bg-dark-100/40 backdrop-blur-sm border border-gray-800/50;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #06b6d4;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0891b2;
+}
+
+/* Utilities */
+.gradient-text {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

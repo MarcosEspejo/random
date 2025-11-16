@@ -1,23 +1,128 @@
+import { useState } from 'react';
+import { FiSmile, FiCornerUpLeft } from 'react-icons/fi';
+
 interface ChatMessageProps {
   message: {
     id: number;
     text: string;
     isSent: boolean;
     timestamp: Date;
+    reaction?: string;
+    replyTo?: {
+      id: number;
+      text: string;
+    };
   };
+  onReact?: (messageId: number, emoji: string) => void;
+  onReply?: (messageId: number, text: string) => void;
 }
 
-const ChatMessage = ({ message }: ChatMessageProps) => {
+const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+
+const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
+  const [showReactions, setShowReactions] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+
+  const handleReaction = (emoji: string) => {
+    if (onReact) {
+      onReact(message.id, emoji);
+    }
+    setShowReactions(false);
+    setShowOptions(false);
+  };
+
+  const handleReply = () => {
+    if (onReply) {
+      onReply(message.id, message.text);
+    }
+    setShowOptions(false);
+  };
+
   return (
-    <div className={`flex ${message.isSent ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex ${message.isSent ? 'justify-end' : 'justify-start'} group relative`}>
       <div className="flex flex-col max-w-[85%] sm:max-w-[75%]">
-        <div
-          className={`chat-bubble ${
-            message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
-          }`}
-        >
-          <p className="text-sm md:text-base leading-relaxed break-words">{message.text}</p>
+        <div className="relative">
+          {/* Replied message preview */}
+          {message.replyTo && (
+            <div className={`mb-1 px-3 py-2 rounded-lg border-l-2 ${
+              message.isSent 
+                ? 'bg-cyan-600/20 border-cyan-400' 
+                : 'bg-dark-100/60 border-gray-600'
+            }`}>
+              <p className="text-xs text-gray-400 mb-0.5">Respondiendo a:</p>
+              <p className="text-xs text-gray-300 truncate">{message.replyTo.text}</p>
+            </div>
+          )}
+          
+          {/* Message bubble */}
+          <div
+            className={`chat-bubble ${
+              message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
+            } relative`}
+            onMouseEnter={() => setShowOptions(true)}
+            onMouseLeave={() => {
+              if (!showReactions) setShowOptions(false);
+            }}
+            onTouchStart={() => setShowOptions(true)}
+          >
+            <p className="text-sm md:text-base leading-relaxed break-words">{message.text}</p>
+            
+            {/* Reaction on message */}
+            {message.reaction && (
+              <div className="absolute -bottom-2 -right-1 bg-dark-200 border border-gray-700 rounded-full px-1.5 py-0.5 text-xs shadow-sm">
+                {message.reaction}
+              </div>
+            )}
+          </div>
+
+          {/* Action buttons (hover) */}
+          {showOptions && (
+            <div className={`absolute top-0 ${
+              message.isSent ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'
+            } flex gap-1 px-2`}>
+              <button
+                onClick={() => setShowReactions(!showReactions)}
+                className="bg-dark-100 hover:bg-dark-200 border border-gray-700 rounded-full p-1.5 transition-colors"
+                title="Reaccionar"
+              >
+                <FiSmile className="text-sm text-gray-400" />
+              </button>
+              {!message.isSent && (
+                <button
+                  onClick={handleReply}
+                  className="bg-dark-100 hover:bg-dark-200 border border-gray-700 rounded-full p-1.5 transition-colors"
+                  title="Responder"
+                >
+                  <FiCornerUpLeft className="text-sm text-gray-400" />
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Reactions picker */}
+          {showReactions && (
+            <div 
+              className={`absolute top-0 ${
+                message.isSent ? 'left-0 -translate-x-full -translate-y-full' : 'right-0 translate-x-full -translate-y-full'
+              } bg-dark-100 border border-gray-700 rounded-lg p-2 shadow-lg flex gap-1 z-10`}
+              onMouseLeave={() => {
+                setShowReactions(false);
+                setShowOptions(false);
+              }}
+            >
+              {REACTIONS.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => handleReaction(emoji)}
+                  className="hover:bg-dark-200 rounded px-2 py-1 text-lg transition-colors"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
         <span className={`text-xs text-gray-500 mt-1 px-2 ${
           message.isSent ? 'text-right' : 'text-left'
         }`}>

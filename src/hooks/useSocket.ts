@@ -6,6 +6,11 @@ interface Message {
   text: string;
   isSent: boolean;
   timestamp: Date;
+  reaction?: string;
+  replyTo?: {
+    id: number;
+    text: string;
+  };
 }
 
 interface UseSocketReturn {
@@ -19,11 +24,12 @@ interface UseSocketReturn {
   isPartnerTyping: boolean;
   connect: () => void;
   searchMatch: (preferredCountry?: string) => void;
-  sendMessage: (text: string) => void;
+  sendMessage: (text: string, replyTo?: { id: number; text: string }) => void;
   skipPartner: () => void;
   disconnect: () => void;
   startTyping: () => void;
   stopTyping: () => void;
+  setMessageReaction: (messageId: number, emoji: string) => void;
 }
 
 // Detectar si estamos en localhost o en la red (solo en el cliente)
@@ -115,14 +121,21 @@ export const useSocket = (): UseSocketReturn => {
       setMessages([]);
     });
 
-    newSocket.on('receive_message', ({ text, timestamp }) => {
+    newSocket.on('receive_message', ({ text, timestamp, replyTo }) => {
       const newMessage: Message = {
         id: Date.now(),
         text,
         isSent: false,
         timestamp: new Date(timestamp),
+        replyTo,
       };
       setMessages(prev => [...prev, newMessage]);
+    });
+
+    newSocket.on('message_reaction', ({ messageId, emoji }) => {
+      setMessages(prev => prev.map(msg => 
+        msg.id === messageId ? { ...msg, reaction: emoji } : msg
+      ));
     });
 
     newSocket.on('partner_disconnected', () => {
@@ -155,18 +168,28 @@ export const useSocket = (): UseSocketReturn => {
     }
   }, [socket, userCountry]);
 
-  const sendMessage = useCallback((text: string) => {
+  const sendMessage = useCallback((text: string, replyTo?: { id: number; text: string }) => {
     if (socket && isMatched && partnerId) {
       const newMessage: Message = {
         id: Date.now(),
         text,
         isSent: true,
         timestamp: new Date(),
+        replyTo,
       };
       setMessages(prev => [...prev, newMessage]);
-      socket.emit('send_message', { text, partnerId });
+      socket.emit('send_message', { text, partnerId, replyTo });
     }
   }, [socket, isMatched, partnerId]);
+
+  const setMessageReaction = useCallback((messageId: number, emoji: string) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? { ...msg, reaction: emoji } : msg
+    ));
+    if (socket && isMatched) {
+      socket.emit('react_to_message', { messageId, emoji });
+    }
+  }, [socket, isMatched]);
 
   const skipPartner = useCallback(() => {
     if (socket) {
@@ -227,5 +250,6 @@ export const useSocket = (): UseSocketReturn => {
     disconnect,
     startTyping,
     stopTyping,
+    setMessageReaction,
   };
 };

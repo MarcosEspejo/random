@@ -73,11 +73,13 @@ function App() {
     disconnect,
     startTyping,
     stopTyping,
+    setMessageReaction,
   } = useSocket();
 
   const [messageInput, setMessageInput] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [showCountryFilter, setShowCountryFilter] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<{ id: number; text: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -92,8 +94,9 @@ function App() {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (messageInput.trim() && isMatched) {
-      sendMessage(messageInput);
+      sendMessage(messageInput, replyingTo || undefined);
       setMessageInput('');
+      setReplyingTo(null);
       stopTyping();
       
       // Resetear altura del textarea
@@ -296,7 +299,16 @@ function App() {
               <div className="flex-1 glass-effect rounded-xl p-4 md:p-6 overflow-y-auto min-h-[350px] md:min-h-[450px] max-h-[550px] md:max-h-[650px]">
                 <div className="space-y-3">
                   {messages.map((message) => (
-                    <ChatMessage key={message.id} message={message} />
+                    <ChatMessage 
+                      key={message.id} 
+                      message={message}
+                      onReact={(messageId, emoji) => {
+                        setMessageReaction(messageId, emoji);
+                      }}
+                      onReply={(messageId, text) => {
+                        setReplyingTo({ id: messageId, text });
+                      }}
+                    />
                   ))}
                   
                   {/* Indicador de escribiendo */}
@@ -321,6 +333,22 @@ function App() {
                 onSubmit={handleSendMessage}
                 className="glass-effect rounded-xl p-3 md:p-4"
               >
+                {/* Reply preview */}
+                {replyingTo && (
+                  <div className="mb-2 flex items-center justify-between bg-dark-100/60 border border-cyan-500/30 rounded-lg p-2">
+                    <div className="flex-1">
+                      <p className="text-xs text-cyan-400 mb-0.5">Respondiendo a:</p>
+                      <p className="text-sm text-gray-300 truncate">{replyingTo.text}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setReplyingTo(null)}
+                      className="ml-2 text-gray-400 hover:text-gray-200 transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
                 <div className="flex gap-2 md:gap-3 items-end">
                   <textarea
                     value={messageInput}

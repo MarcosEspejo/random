@@ -4,6 +4,11 @@ export interface Message {
   text: string;
   isSent: boolean;
   timestamp: Date;
+  reaction?: string;
+  replyTo?: {
+    id: number;
+    text: string;
+  };
 }
 
 export interface ChatState {

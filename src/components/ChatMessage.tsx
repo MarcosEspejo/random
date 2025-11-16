@@ -107,9 +107,9 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
           {/* Reactions picker */}
           {showReactions && (
             <div 
-              className={`absolute top-0 ${
-                message.isSent ? 'left-0 -translate-x-full -translate-y-full' : 'right-0 translate-x-full -translate-y-full'
-              } bg-dark-100 border border-gray-700 rounded-lg p-2 shadow-lg flex gap-1 z-10`}
+              className={`fixed md:absolute top-auto md:top-0 bottom-20 md:bottom-auto left-1/2 md:left-auto md:right-auto -translate-x-1/2 md:translate-x-0 ${
+                message.isSent ? 'md:left-0 md:-translate-x-full md:-translate-y-full' : 'md:right-0 md:translate-x-full md:-translate-y-full'
+              } bg-dark-100 border border-gray-700 rounded-lg p-3 shadow-xl flex gap-2 z-50`}
               onMouseEnter={() => setShowReactions(true)}
               onMouseLeave={() => {
                 setShowReactions(false);
@@ -121,7 +121,7 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
                   key={emoji}
                   onClick={() => handleReaction(emoji)}
                   onMouseDown={(e) => e.preventDefault()}
-                  className="hover:bg-dark-200 rounded px-2 py-1 text-lg transition-colors"
+                  className="hover:bg-dark-200 active:bg-dark-300 rounded-lg px-3 py-2 text-xl md:text-lg transition-colors touch-manipulation"
                 >
                   {emoji}
                 </button>

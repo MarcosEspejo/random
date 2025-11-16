@@ -79,36 +79,36 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
       </div>
 
       <div className="max-w-4xl w-full relative z-10">
-        <div className="text-center space-y-12">
+        <div className="text-center space-y-6 md:space-y-12">
           {/* Logo/Title */}
-          <div className="space-y-4">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-3 tracking-tight">
+          <div className="space-y-2 md:space-y-4">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-2 md:mb-3 tracking-tight">
               <span className="inline-block">Chat</span>
               <span className="bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 bg-clip-text text-transparent inline-block">Aleatorio</span>
             </h1>
             <div className="flex items-center justify-center gap-2 text-gray-400">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-500"></div>
-              <p className="text-base sm:text-lg md:text-xl font-light">
+              <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent to-cyan-500"></div>
+              <p className="text-sm sm:text-base md:text-xl font-light">
                 Conecta con personas de todo el mundo
               </p>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500"></div>
+              <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent to-cyan-500"></div>
             </div>
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-6 px-2">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="glass-effect rounded-lg p-6 text-center space-y-3 hover:border-gray-700 transition-colors duration-200"
+                className="glass-effect rounded-lg p-3 md:p-6 text-center space-y-1.5 md:space-y-3 hover:border-gray-700 transition-colors duration-200"
               >
-                <div className="text-accent-primary flex justify-center">
+                <div className="text-accent-primary flex justify-center text-xl md:text-3xl">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-medium text-white">
+                <h3 className="text-xs md:text-lg font-medium text-white">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400 text-sm font-light">{feature.description}</p>
+                <p className="text-gray-400 text-[10px] md:text-sm font-light hidden md:block">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -118,16 +118,16 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             <button
               type="button"
               onClick={handleStart}
-              className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white text-lg font-semibold px-12 py-5 rounded-xl inline-flex items-center gap-3 shadow-md transition-colors duration-200 cursor-pointer"
+              className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white text-base md:text-lg font-semibold px-8 md:px-12 py-4 md:py-5 rounded-xl inline-flex items-center gap-2 md:gap-3 shadow-md transition-colors duration-200 cursor-pointer"
             >
-              <FiMessageCircle className="text-2xl" />
+              <FiMessageCircle className="text-xl md:text-2xl" />
               <span>Comenzar a Chatear</span>
             </button>
           </div>
 
           {/* Info */}
-          <div className="glass-effect rounded-lg p-4 max-w-2xl mx-auto border-gray-800">
-            <p className="text-sm text-gray-400 font-light">
+          <div className="glass-effect rounded-lg p-3 md:p-4 max-w-2xl mx-auto border-gray-800">
+            <p className="text-xs md:text-sm text-gray-400 font-light">
               🔒 Tu privacidad es importante. No guardamos ninguna información
               personal. Los chats son temporales y anónimos.
             </p>

@@ -59,11 +59,6 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
             className={`chat-bubble ${
               message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
             } relative`}
-            onMouseEnter={() => setShowOptions(true)}
-            onMouseLeave={() => {
-              if (!showReactions) setShowOptions(false);
-            }}
-            onTouchStart={() => setShowOptions(true)}
           >
             <p className="text-sm md:text-base leading-relaxed break-words">{message.text}</p>
             
@@ -76,28 +71,38 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
           </div>
 
           {/* Action buttons (hover) */}
-          {showOptions && (
-            <div className={`absolute top-0 ${
+          <div 
+            className={`absolute top-0 ${
               message.isSent ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'
-            } flex gap-1 px-2`}>
+            } flex gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity`}
+            onMouseEnter={() => setShowOptions(true)}
+            onMouseLeave={() => {
+              setTimeout(() => {
+                if (!showReactions) {
+                  setShowOptions(false);
+                }
+              }, 100);
+            }}
+          >
+            <button
+              onClick={() => setShowReactions(!showReactions)}
+              onMouseDown={(e) => e.preventDefault()}
+              className="bg-dark-100 hover:bg-dark-200 border border-gray-700 rounded-full p-1.5 transition-colors"
+              title="Reaccionar"
+            >
+              <FiSmile className="text-sm text-gray-400" />
+            </button>
+            {!message.isSent && (
               <button
-                onClick={() => setShowReactions(!showReactions)}
+                onClick={handleReply}
+                onMouseDown={(e) => e.preventDefault()}
                 className="bg-dark-100 hover:bg-dark-200 border border-gray-700 rounded-full p-1.5 transition-colors"
-                title="Reaccionar"
+                title="Responder"
               >
-                <FiSmile className="text-sm text-gray-400" />
+                <FiCornerUpLeft className="text-sm text-gray-400" />
               </button>
-              {!message.isSent && (
-                <button
-                  onClick={handleReply}
-                  className="bg-dark-100 hover:bg-dark-200 border border-gray-700 rounded-full p-1.5 transition-colors"
-                  title="Responder"
-                >
-                  <FiCornerUpLeft className="text-sm text-gray-400" />
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Reactions picker */}
           {showReactions && (
@@ -105,6 +110,7 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
               className={`absolute top-0 ${
                 message.isSent ? 'left-0 -translate-x-full -translate-y-full' : 'right-0 translate-x-full -translate-y-full'
               } bg-dark-100 border border-gray-700 rounded-lg p-2 shadow-lg flex gap-1 z-10`}
+              onMouseEnter={() => setShowReactions(true)}
               onMouseLeave={() => {
                 setShowReactions(false);
                 setShowOptions(false);
@@ -114,6 +120,7 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
                 <button
                   key={emoji}
                   onClick={() => handleReaction(emoji)}
+                  onMouseDown={(e) => e.preventDefault()}
                   className="hover:bg-dark-200 rounded px-2 py-1 text-lg transition-colors"
                 >
                   {emoji}

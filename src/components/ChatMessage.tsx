@@ -39,28 +39,28 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
   };
 
   return (
-    <div className={`flex ${message.isSent ? 'justify-end' : 'justify-start'} group relative`}>
-      <div className="flex flex-col max-w-[85%] sm:max-w-[75%]">
+    <div className={`w-full flex ${message.isSent ? 'justify-end' : 'justify-start'} px-1`}>
+      <div className="flex flex-col max-w-[85%] sm:max-w-[75%] min-w-0 group relative">
+        {/* Replied message preview */}
+        {message.replyTo && (
+          <div className={`mb-1 px-3 py-2 rounded-lg border-l-2 ${
+            message.isSent 
+              ? 'bg-cyan-600/20 border-cyan-400' 
+              : 'bg-dark-100/60 border-gray-600'
+          }`}>
+            <p className="text-xs text-gray-400 mb-0.5">Respondiendo a:</p>
+            <p className="text-xs text-gray-300 truncate">{message.replyTo.text}</p>
+          </div>
+        )}
+        
+        {/* Message bubble */}
         <div className="relative">
-          {/* Replied message preview */}
-          {message.replyTo && (
-            <div className={`mb-1 px-3 py-2 rounded-lg border-l-2 ${
-              message.isSent 
-                ? 'bg-cyan-600/20 border-cyan-400' 
-                : 'bg-dark-100/60 border-gray-600'
-            }`}>
-              <p className="text-xs text-gray-400 mb-0.5">Respondiendo a:</p>
-              <p className="text-xs text-gray-300 truncate">{message.replyTo.text}</p>
-            </div>
-          )}
-          
-          {/* Message bubble */}
           <div
             className={`chat-bubble ${
               message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
             } relative`}
           >
-            <p className="text-sm md:text-base leading-relaxed break-words">{message.text}</p>
+            <p className="text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
             
             {/* Reaction on message */}
             {message.reaction && (
@@ -70,11 +70,9 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
             )}
           </div>
 
-          {/* Action buttons (hover) */}
+          {/* Action buttons - visible on hover/touch */}
           <div 
-            className={`absolute top-0 ${
-              message.isSent ? 'left-0 -translate-x-[calc(100%+0.25rem)]' : 'right-0 translate-x-[calc(100%+0.25rem)]'
-            } flex gap-1 opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity`}
+            className="absolute -top-8 right-0 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
             onMouseEnter={() => setShowOptions(true)}
             onMouseLeave={() => {
               setTimeout(() => {
@@ -103,29 +101,6 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
               </button>
             )}
           </div>
-
-          {/* Reactions picker */}
-          {showReactions && (
-            <div 
-              className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-dark-100 border border-gray-700 rounded-lg p-3 shadow-xl flex gap-2 z-50"
-              onMouseEnter={() => setShowReactions(true)}
-              onMouseLeave={() => {
-                setShowReactions(false);
-                setShowOptions(false);
-              }}
-            >
-              {REACTIONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => handleReaction(emoji)}
-                  onMouseDown={(e) => e.preventDefault()}
-                  className="hover:bg-dark-200 active:bg-dark-300 rounded-lg px-3 py-2 text-xl transition-colors touch-manipulation"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         <span className={`text-xs text-gray-500 mt-1 px-2 ${
@@ -137,6 +112,29 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
           })}
         </span>
       </div>
+
+      {/* Reactions picker - always fixed at bottom center */}
+      {showReactions && (
+        <div 
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-dark-100 border border-gray-700 rounded-lg p-3 shadow-xl flex gap-2 z-50"
+          onMouseEnter={() => setShowReactions(true)}
+          onMouseLeave={() => {
+            setShowReactions(false);
+            setShowOptions(false);
+          }}
+        >
+          {REACTIONS.map((emoji) => (
+            <button
+              key={emoji}
+              onClick={() => handleReaction(emoji)}
+              onMouseDown={(e) => e.preventDefault()}
+              className="hover:bg-dark-200 active:bg-dark-300 rounded-lg px-3 py-2 text-xl transition-colors touch-manipulation"
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import axios from 'axios';
 
 // Estado del servidor
 const users = new Map();
@@ -90,19 +91,56 @@ export function initializeSocketServer(httpServer) {
     // Usuario solicita país basado en IP
     socket.on('request_country', async () => {
       try {
-        // En producción, usar un servicio como ipapi.co
-        // Por ahora, asignar un país aleatorio para demostración
-        const countries = ['Mexico', 'España', 'Argentina', 'Colombia', 'Chile', 'Peru', 'Venezuela', 'Ecuador', 'Guatemala', 'Cuba'];
-        const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+        // Obtener IP del cliente
+        const clientIp = socket.handshake.headers['x-forwarded-for']?.split(',')[0] || 
+                        socket.handshake.headers['x-real-ip'] || 
+                        socket.handshake.address;
+        
+        console.log('🌍 Detectando país para IP:', clientIp);
+        
+        let country = 'Unknown';
+        
+        // Si es localhost o IP privada, usar un país por defecto
+        if (!clientIp || clientIp === '127.0.0.1' || clientIp === '::1' || clientIp.startsWith('192.168.') || clientIp.startsWith('10.')) {
+          country = 'Colombia'; // País por defecto para desarrollo local
+          console.log('🏠 IP local detectada, usando país por defecto:', country);
+        } else {
+          // Usar ipapi.co para obtener la ubicación real
+          try {
+            const response = await axios.get(`https://ipapi.co/${clientIp}/json/`, {
+              timeout: 5000
+            });
+            
+            if (response.data && response.data.country_name) {
+              country = response.data.country_name;
+              console.log('✅ País detectado:', country);
+            }
+          } catch (apiError) {
+            console.error('⚠️ Error al consultar API de geolocalización:', apiError.message);
+            // Fallback: intentar con api alternativa
+            try {
+              const fallbackResponse = await axios.get(`http://ip-api.com/json/${clientIp}`, {
+                timeout: 5000
+              });
+              if (fallbackResponse.data && fallbackResponse.data.country) {
+                country = fallbackResponse.data.country;
+                console.log('✅ País detectado (fallback):', country);
+              }
+            } catch {
+              country = 'Unknown';
+            }
+          }
+        }
         
         const user = users.get(socket.id);
         if (user) {
-          user.country = randomCountry;
+          user.country = country;
           users.set(socket.id, user);
         }
         
-        socket.emit('country_detected', randomCountry);
+        socket.emit('country_detected', country);
       } catch (error) {
+        console.error('❌ Error en detección de país:', error);
         socket.emit('country_detected', 'Unknown');
       }
     });

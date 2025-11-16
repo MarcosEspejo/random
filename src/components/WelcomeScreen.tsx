@@ -79,55 +79,55 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
       </div>
 
       <div className="max-w-4xl w-full relative z-10">
-        <div className="text-center space-y-8 md:space-y-12">
+        <div className="text-center space-y-7 md:space-y-12">
           {/* Logo/Title */}
-          <div className="space-y-3 md:space-y-4 px-4">
-            <h1 className="text-6xl sm:text-6xl md:text-7xl font-bold text-white mb-3 tracking-tight leading-tight">
+          <div className="space-y-3 md:space-y-4">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-3 tracking-tight">
               <span className="inline-block">Chat</span>
               <span className="bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 bg-clip-text text-transparent inline-block">Aleatorio</span>
             </h1>
-            <div className="flex items-center justify-center gap-2 text-gray-400 px-4">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-500"></div>
-              <p className="text-lg sm:text-lg md:text-xl font-light">
+            <div className="flex items-center justify-center gap-2 text-gray-400">
+              <div className="h-px w-10 md:w-12 bg-gradient-to-r from-transparent to-cyan-500"></div>
+              <p className="text-base sm:text-lg md:text-xl font-light">
                 Conecta con personas de todo el mundo
               </p>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-500"></div>
+              <div className="h-px w-10 md:w-12 bg-gradient-to-l from-transparent to-cyan-500"></div>
             </div>
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-6 md:px-2">
+          <div className="grid grid-cols-3 md:grid-cols-3 gap-4 md:gap-6 px-4 md:px-2">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="glass-effect rounded-xl p-6 md:p-6 text-center space-y-3 hover:border-gray-700 transition-all duration-200 border-2 border-gray-800/50 hover:shadow-lg hover:shadow-cyan-500/10"
+                className="glass-effect rounded-lg p-5 md:p-6 text-center space-y-2 md:space-y-3 hover:border-gray-700 transition-colors duration-200"
               >
-                <div className="text-accent-primary flex justify-center text-4xl md:text-3xl">
+                <div className="text-accent-primary flex justify-center text-3xl md:text-3xl">
                   {feature.icon}
                 </div>
-                <h3 className="text-base md:text-lg font-semibold text-white">
+                <h3 className="text-sm md:text-lg font-semibold text-white leading-tight">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400 text-sm md:text-sm font-light leading-relaxed">{feature.description}</p>
+                <p className="text-gray-400 text-[11px] md:text-sm font-light hidden md:block">{feature.description}</p>
               </div>
             ))}
           </div>
 
           {/* CTA Button */}
-          <div className="px-4">
+          <div>
             <button
               type="button"
               onClick={handleStart}
-              className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white text-xl md:text-lg font-semibold px-12 md:px-12 py-5 md:py-5 rounded-xl inline-flex items-center gap-3 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-200 cursor-pointer"
+              className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white text-lg md:text-lg font-semibold px-10 md:px-12 py-4 md:py-5 rounded-xl inline-flex items-center gap-3 shadow-lg shadow-cyan-500/20 transition-colors duration-200 cursor-pointer"
             >
               <FiMessageCircle className="text-2xl" />
               <span>Comenzar a Chatear</span>
             </button>
           </div>
 
-          {/* Info - Visible on mobile */}
-          <div className="glass-effect rounded-lg p-4 max-w-2xl mx-4 md:mx-auto border-gray-800">
-            <p className="text-sm md:text-sm text-gray-400 font-light leading-relaxed">
+          {/* Info - Hidden on mobile */}
+          <div className="hidden md:block glass-effect rounded-lg p-4 max-w-2xl mx-auto border-gray-800">
+            <p className="text-sm text-gray-400 font-light">
               🔒 Tu privacidad es importante. No guardamos ninguna información
               personal. Los chats son temporales y anónimos.
             </p>

@@ -154,22 +154,23 @@ export function initializeSocketServer(httpServer) {
     });
 
     // Enviar mensaje
-    socket.on('send_message', ({ text, partnerId, replyTo }) => {
+    socket.on('send_message', ({ text, partnerId, replyTo, messageId }) => {
       const user = users.get(socket.id);
       if (user && user.isMatched && user.partnerId === partnerId) {
         io.to(partnerId).emit('receive_message', {
           text,
           timestamp: new Date(),
-          replyTo
+          replyTo,
+          messageId
         });
       }
     });
 
     // Reaccionar a mensaje
-    socket.on('react_to_message', ({ messageId, emoji }) => {
+    socket.on('react_to_message', ({ messageId, emoji, partnerId }) => {
       const user = users.get(socket.id);
-      if (user && user.partnerId) {
-        io.to(user.partnerId).emit('message_reaction', {
+      if (user && user.isMatched && user.partnerId === partnerId) {
+        io.to(partnerId).emit('message_reaction', {
           messageId,
           emoji
         });

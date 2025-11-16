@@ -121,9 +121,9 @@ export const useSocket = (): UseSocketReturn => {
       setMessages([]);
     });
 
-    newSocket.on('receive_message', ({ text, timestamp, replyTo }) => {
+    newSocket.on('receive_message', ({ text, timestamp, replyTo, messageId }) => {
       const newMessage: Message = {
-        id: Date.now(),
+        id: messageId || Date.now(),
         text,
         isSent: false,
         timestamp: new Date(timestamp),
@@ -170,26 +170,27 @@ export const useSocket = (): UseSocketReturn => {
 
   const sendMessage = useCallback((text: string, replyTo?: { id: number; text: string }) => {
     if (socket && isMatched && partnerId) {
+      const messageId = Date.now();
       const newMessage: Message = {
-        id: Date.now(),
+        id: messageId,
         text,
         isSent: true,
         timestamp: new Date(),
         replyTo,
       };
       setMessages(prev => [...prev, newMessage]);
-      socket.emit('send_message', { text, partnerId, replyTo });
+      socket.emit('send_message', { text, partnerId, replyTo, messageId });
     }
   }, [socket, isMatched, partnerId]);
 
   const setMessageReaction = useCallback((messageId: number, emoji: string) => {
     setMessages(prev => prev.map(msg => 
-      msg.id === messageId ? { ...msg, reaction: emoji } : msg
+      msg.id === messageId ? { ...msg, reaction: emoji || undefined } : msg
     ));
-    if (socket && isMatched) {
-      socket.emit('react_to_message', { messageId, emoji });
+    if (socket && isMatched && partnerId) {
+      socket.emit('react_to_message', { messageId, emoji, partnerId });
     }
-  }, [socket, isMatched]);
+  }, [socket, isMatched, partnerId]);
 
   const skipPartner = useCallback(() => {
     if (socket) {

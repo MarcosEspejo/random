@@ -133,8 +133,9 @@ export const useSocket = (): UseSocketReturn => {
     });
 
     newSocket.on('message_reaction', ({ messageId, emoji }) => {
+      console.log('Reacción recibida:', { messageId, emoji });
       setMessages(prev => prev.map(msg => 
-        msg.id === messageId ? { ...msg, reaction: emoji } : msg
+        msg.id === messageId ? { ...msg, reaction: emoji || undefined } : msg
       ));
     });
 

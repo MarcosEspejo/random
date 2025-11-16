@@ -24,7 +24,12 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
 
   const handleReaction = (emoji: string) => {
     if (onReact) {
-      onReact(message.id, emoji);
+      // Si el emoji ya está seleccionado, quitarlo
+      if (message.reaction === emoji) {
+        onReact(message.id, '');
+      } else {
+        onReact(message.id, emoji);
+      }
     }
     setShowReactions(false);
   };
@@ -56,61 +61,47 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
             <div
               className={`chat-bubble ${
                 message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
-              } relative cursor-pointer md:cursor-default active:scale-[0.98] md:active:scale-100 transition-transform`}
-              onTouchStart={(e) => {
-                const touchTimer = setTimeout(() => {
-                  setShowReactions(true);
-                }, 500);
-                e.currentTarget.dataset.touchTimer = touchTimer.toString();
-              }}
-              onTouchEnd={(e) => {
-                const touchTimer = e.currentTarget.dataset.touchTimer;
-                if (touchTimer) {
-                  clearTimeout(parseInt(touchTimer));
-                }
-              }}
-              onTouchMove={(e) => {
-                const touchTimer = e.currentTarget.dataset.touchTimer;
-                if (touchTimer) {
-                  clearTimeout(parseInt(touchTimer));
-                }
-              }}
+              } relative ${message.reaction ? 'mb-2' : ''}`}
             >
               <p className="text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
               
-              {/* Reaction on message */}
+              {/* Reaction on message - clickeable to remove */}
               {message.reaction && (
-                <div className="absolute -bottom-2 -right-1 bg-dark-200 border border-gray-700 rounded-full px-1.5 py-0.5 text-xs shadow-sm">
+                <button
+                  onClick={() => handleReaction(message.reaction!)}
+                  className="absolute -bottom-3 right-2 bg-dark-200 hover:bg-dark-300 border border-gray-700 rounded-full px-2 py-1 text-base shadow-md transition-colors active:scale-95"
+                  title="Clic para quitar reacción"
+                >
                   {message.reaction}
-                </div>
+                </button>
               )}
             </div>
 
-            {/* Action buttons - only visible on desktop hover */}
-            <div className={`hidden md:flex absolute top-1/2 -translate-y-1/2 gap-1 ${
-              message.isSent ? '-left-10' : '-right-10'
-            } opacity-0 group-hover:opacity-100 transition-opacity`}>
+            {/* Action buttons - visible below message on mobile, hover on desktop */}
+            <div className={`flex gap-2 mt-1 md:absolute md:top-1/2 md:-translate-y-1/2 md:mt-0 ${
+              message.isSent ? 'justify-end md:justify-start md:-left-20' : 'justify-start md:justify-end md:-right-20'
+            } md:opacity-0 md:group-hover:opacity-100 transition-opacity`}>
               <button
                 onClick={() => setShowReactions(!showReactions)}
-                className="bg-dark-100 hover:bg-dark-200 active:bg-dark-300 border border-gray-700 rounded-full p-2 transition-colors shadow-sm"
+                className="bg-dark-100 hover:bg-dark-200 active:bg-dark-300 border border-gray-700 rounded-full p-1.5 md:p-2 transition-colors shadow-sm"
                 title="Reaccionar"
               >
-                <FiSmile className="text-base text-gray-400" />
+                <FiSmile className="text-sm md:text-base text-gray-400" />
               </button>
               {!message.isSent && (
                 <button
                   onClick={handleReply}
-                  className="bg-dark-100 hover:bg-dark-200 active:bg-dark-300 border border-gray-700 rounded-full p-2 transition-colors shadow-sm"
+                  className="bg-dark-100 hover:bg-dark-200 active:bg-dark-300 border border-gray-700 rounded-full p-1.5 md:p-2 transition-colors shadow-sm"
                   title="Responder"
                 >
-                  <FiCornerUpLeft className="text-base text-gray-400" />
+                  <FiCornerUpLeft className="text-sm md:text-base text-gray-400" />
                 </button>
               )}
             </div>
           </div>
 
           {/* Timestamp */}
-          <span className={`text-xs text-gray-500 mt-1.5 px-2 ${
+          <span className={`text-xs text-gray-500 mt-1 px-2 ${
             message.isSent ? 'text-right' : 'text-left'
           }`}>
             {message.timestamp.toLocaleTimeString('es-ES', {
@@ -121,25 +112,29 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
         </div>
       </div>
 
-      {/* Reactions picker - modal overlay */}
+      {/* Reactions picker - animated dropdown */}
       {showReactions && (
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-black/40 z-40 md:hidden"
             onClick={() => setShowReactions(false)}
           />
           
           {/* Reactions panel */}
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-            <div className="bg-dark-100 border border-gray-700 rounded-2xl p-4 shadow-2xl">
-              <p className="text-center text-sm text-gray-400 mb-3">Reaccionar</p>
-              <div className="flex gap-3 justify-center">
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 md:relative md:bottom-auto md:left-auto md:translate-x-0 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+            <div className="bg-dark-100 border border-gray-700 rounded-2xl p-3 md:p-4 shadow-2xl">
+              <p className="text-center text-xs md:text-sm text-gray-400 mb-2 md:mb-3">
+                {message.reaction ? 'Cambiar reacción' : 'Reaccionar'}
+              </p>
+              <div className="flex gap-2 md:gap-3 justify-center">
                 {REACTIONS.map((emoji) => (
                   <button
                     key={emoji}
                     onClick={() => handleReaction(emoji)}
-                    className="hover:bg-dark-200 active:bg-dark-300 active:scale-95 rounded-xl p-3 text-2xl transition-all touch-manipulation hover:scale-110"
+                    className={`hover:bg-dark-200 active:bg-dark-300 active:scale-95 rounded-xl p-2 md:p-3 text-xl md:text-2xl transition-all touch-manipulation hover:scale-110 ${
+                      message.reaction === emoji ? 'bg-dark-200 ring-2 ring-cyan-500' : ''
+                    }`}
                   >
                     {emoji}
                   </button>

@@ -296,8 +296,8 @@ function App() {
               </div>
 
               {/* Messages Container */}
-              <div className="flex-1 glass-effect rounded-xl p-2 md:p-4 overflow-y-auto overflow-x-hidden min-h-[350px] md:min-h-[450px] max-h-[550px] md:max-h-[650px]">
-                <div className="space-y-4 w-full">
+              <div className="flex-1 glass-effect rounded-xl p-3 md:p-4 overflow-y-auto overflow-x-hidden min-h-[350px] md:min-h-[450px] max-h-[550px] md:max-h-[650px]">
+                <div className="space-y-2 w-full px-8 md:px-10">
                   {messages.map((message) => (
                     <ChatMessage 
                       key={message.id} 

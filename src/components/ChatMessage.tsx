@@ -56,7 +56,25 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
             <div
               className={`chat-bubble ${
                 message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
-              } relative`}
+              } relative cursor-pointer md:cursor-default active:scale-[0.98] md:active:scale-100 transition-transform`}
+              onTouchStart={(e) => {
+                const touchTimer = setTimeout(() => {
+                  setShowReactions(true);
+                }, 500);
+                e.currentTarget.dataset.touchTimer = touchTimer.toString();
+              }}
+              onTouchEnd={(e) => {
+                const touchTimer = e.currentTarget.dataset.touchTimer;
+                if (touchTimer) {
+                  clearTimeout(parseInt(touchTimer));
+                }
+              }}
+              onTouchMove={(e) => {
+                const touchTimer = e.currentTarget.dataset.touchTimer;
+                if (touchTimer) {
+                  clearTimeout(parseInt(touchTimer));
+                }
+              }}
             >
               <p className="text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
               
@@ -68,13 +86,12 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
               )}
             </div>
 
-            {/* Action buttons - always visible on mobile, hover on desktop */}
-            <div className={`absolute top-1/2 -translate-y-1/2 flex gap-1 ${
+            {/* Action buttons - only visible on desktop hover */}
+            <div className={`hidden md:flex absolute top-1/2 -translate-y-1/2 gap-1 ${
               message.isSent ? '-left-10' : '-right-10'
-            } md:opacity-0 md:group-hover:opacity-100 transition-opacity`}>
+            } opacity-0 group-hover:opacity-100 transition-opacity`}>
               <button
                 onClick={() => setShowReactions(!showReactions)}
-                onTouchStart={() => setShowReactions(!showReactions)}
                 className="bg-dark-100 hover:bg-dark-200 active:bg-dark-300 border border-gray-700 rounded-full p-2 transition-colors shadow-sm"
                 title="Reaccionar"
               >

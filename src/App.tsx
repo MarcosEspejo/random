@@ -297,7 +297,13 @@ function App() {
 
               {/* Messages Container */}
               <div className="flex-1 glass-effect rounded-xl p-3 md:p-4 overflow-y-auto overflow-x-hidden min-h-[350px] md:min-h-[450px] max-h-[550px] md:max-h-[650px]">
-                <div className="space-y-2 w-full px-8 md:px-10">
+                <div className="space-y-2 w-full px-1 md:px-10">
+                  {messages.length === 0 && (
+                    <div className="text-center text-gray-500 text-sm py-8">
+                      <p className="md:hidden">💬 Mantén presionado un mensaje para reaccionar</p>
+                      <p className="hidden md:block">💬 Pasa el mouse sobre un mensaje para ver opciones</p>
+                    </div>
+                  )}
                   {messages.map((message) => (
                     <ChatMessage 
                       key={message.id} 

@@ -61,21 +61,21 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
             <div
               className={`chat-bubble ${
                 message.isSent ? 'chat-bubble-sent' : 'chat-bubble-received'
-              } relative ${message.reaction ? 'mb-2' : ''}`}
+              } relative`}
             >
               <p className="text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
-              
-              {/* Reaction on message - clickeable to remove */}
-              {message.reaction && (
-                <button
-                  onClick={() => handleReaction(message.reaction!)}
-                  className="absolute -bottom-3 right-2 bg-dark-200 hover:bg-dark-300 border border-gray-700 rounded-full px-2 py-1 text-base shadow-md transition-colors active:scale-95"
-                  title="Clic para quitar reacción"
-                >
-                  {message.reaction}
-                </button>
-              )}
             </div>
+            
+            {/* Reaction on message - clickeable to remove */}
+            {message.reaction && (
+              <button
+                onClick={() => handleReaction(message.reaction!)}
+                className={`absolute -bottom-2 ${message.isSent ? 'left-2' : 'right-2'} bg-dark-200 hover:bg-dark-300 border border-gray-700 rounded-full px-2 py-0.5 text-sm shadow-md transition-colors active:scale-95 z-10`}
+                title="Clic para quitar reacción"
+              >
+                {message.reaction}
+              </button>
+            )}
 
             {/* Action buttons - visible below message on mobile, hover on desktop */}
             <div className={`flex gap-2 mt-1 md:absolute md:top-1/2 md:-translate-y-1/2 md:mt-0 ${

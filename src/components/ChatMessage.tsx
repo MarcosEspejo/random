@@ -70,17 +70,17 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
             {message.reaction && (
               <button
                 onClick={() => handleReaction(message.reaction!)}
-                className={`absolute -bottom-2 ${message.isSent ? 'left-2' : 'right-2'} bg-dark-200 hover:bg-dark-300 border border-gray-700 rounded-full px-2 py-0.5 text-sm shadow-md transition-colors active:scale-95 z-10`}
+                className={`absolute -bottom-1.5 md:-bottom-2.5 ${message.isSent ? 'left-2' : 'right-2'} bg-dark-200 hover:bg-dark-300 border border-gray-700 rounded-full px-2 py-0.5 text-sm shadow-md transition-colors active:scale-95 z-10`}
                 title="Clic para quitar reacción"
               >
                 {message.reaction}
               </button>
             )}
 
-            {/* Action buttons - visible below message on mobile, hover on desktop */}
-            <div className={`flex gap-2 mt-1 md:absolute md:top-1/2 md:-translate-y-1/2 md:mt-0 ${
-              message.isSent ? 'justify-end md:justify-start md:-left-20' : 'justify-start md:justify-end md:-right-20'
-            } md:opacity-0 md:group-hover:opacity-100 transition-opacity`}>
+            {/* Action buttons - on the side for both mobile and desktop */}
+            <div className={`absolute top-1/2 -translate-y-1/2 flex gap-1 ${
+              message.isSent ? '-left-11 md:-left-20' : '-right-11 md:-right-20'
+            } opacity-0 group-hover:opacity-100 transition-opacity`}>
               <button
                 onClick={() => setShowReactions(!showReactions)}
                 className="bg-dark-100 hover:bg-dark-200 active:bg-dark-300 border border-gray-700 rounded-full p-1.5 md:p-2 transition-colors shadow-sm"
@@ -101,7 +101,7 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
           </div>
 
           {/* Timestamp */}
-          <span className={`text-xs text-gray-500 mt-1 px-2 ${
+          <span className={`text-xs text-gray-500 mt-1.5 px-2 ${
             message.isSent ? 'text-right' : 'text-left'
           }`}>
             {message.timestamp.toLocaleTimeString('es-ES', {

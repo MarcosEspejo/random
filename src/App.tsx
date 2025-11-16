@@ -297,7 +297,7 @@ function App() {
 
               {/* Messages Container */}
               <div className="flex-1 glass-effect rounded-xl p-3 md:p-4 overflow-y-auto overflow-x-hidden min-h-[350px] md:min-h-[450px] max-h-[550px] md:max-h-[650px]">
-                <div className="space-y-3 w-full px-0 md:px-12">
+                <div className="space-y-3 w-full px-6 md:px-12">
                   {messages.length === 0 && (
                     <div className="text-center text-gray-500 text-sm py-8">
                       <p className="md:hidden">💬 Mantén presionado un mensaje para reaccionar</p>

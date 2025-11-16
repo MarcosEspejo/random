@@ -141,11 +141,11 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-300 via-dark-200 to-dark-400 flex flex-col relative">
+    <div className="min-h-screen bg-gradient-to-br from-dark-300 via-dark-200 to-dark-400 flex flex-col relative overflow-x-hidden">
       <AnimatedBackground />
       <Header onlineUsers={onlineUsers} />
 
-      <main className="flex-1 flex flex-col max-w-6xl w-full mx-auto px-4 py-6 relative z-10">
+      <main className="flex-1 flex flex-col max-w-6xl w-full mx-auto px-4 py-6 relative z-10 overflow-x-hidden">
         <AnimatePresence mode="wait">
           {!isMatched && !isWaiting && (
             <motion.div

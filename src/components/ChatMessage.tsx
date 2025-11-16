@@ -73,8 +73,8 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
           {/* Action buttons (hover) */}
           <div 
             className={`absolute top-0 ${
-              message.isSent ? 'left-0 -translate-x-full' : 'right-0 translate-x-full'
-            } flex gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity`}
+              message.isSent ? 'left-0 -translate-x-[calc(100%+0.25rem)]' : 'right-0 translate-x-[calc(100%+0.25rem)]'
+            } flex gap-1 opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity`}
             onMouseEnter={() => setShowOptions(true)}
             onMouseLeave={() => {
               setTimeout(() => {
@@ -107,9 +107,7 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
           {/* Reactions picker */}
           {showReactions && (
             <div 
-              className={`fixed md:absolute top-auto md:top-0 bottom-20 md:bottom-auto left-1/2 md:left-auto md:right-auto -translate-x-1/2 md:translate-x-0 ${
-                message.isSent ? 'md:left-0 md:-translate-x-full md:-translate-y-full' : 'md:right-0 md:translate-x-full md:-translate-y-full'
-              } bg-dark-100 border border-gray-700 rounded-lg p-3 shadow-xl flex gap-2 z-50`}
+              className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-dark-100 border border-gray-700 rounded-lg p-3 shadow-xl flex gap-2 z-50"
               onMouseEnter={() => setShowReactions(true)}
               onMouseLeave={() => {
                 setShowReactions(false);
@@ -121,7 +119,7 @@ const ChatMessage = ({ message, onReact, onReply }: ChatMessageProps) => {
                   key={emoji}
                   onClick={() => handleReaction(emoji)}
                   onMouseDown={(e) => e.preventDefault()}
-                  className="hover:bg-dark-200 active:bg-dark-300 rounded-lg px-3 py-2 text-xl md:text-lg transition-colors touch-manipulation"
+                  className="hover:bg-dark-200 active:bg-dark-300 rounded-lg px-3 py-2 text-xl transition-colors touch-manipulation"
                 >
                   {emoji}
                 </button>

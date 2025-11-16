@@ -125,9 +125,9 @@ const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
             </button>
           </div>
 
-          {/* Info - Hidden on mobile */}
-          <div className="hidden md:block glass-effect rounded-lg p-4 max-w-2xl mx-auto border-gray-800">
-            <p className="text-sm text-gray-400 font-light">
+          {/* Info */}
+          <div className="glass-effect rounded-lg p-3 md:p-4 max-w-2xl mx-auto border-gray-800">
+            <p className="text-xs md:text-sm text-gray-400 font-light leading-relaxed">
               🔒 Tu privacidad es importante. No guardamos ninguna información
               personal. Los chats son temporales y anónimos.
             </p>

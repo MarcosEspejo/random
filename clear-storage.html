@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Limpiar localStorage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        button {
+            background: #06b6d4;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #0891b2;
+        }
+        .success {
+            color: #4ade80;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1> Limpiar localStorage</h1>
+    <p>Haz clic en el botón para borrar el localStorage y probar el modal de edad:</p>
+    <button onclick="clearStorage()">Limpiar localStorage</button>
+    <div id="message"></div>
+    
+    <script>
+        function clearStorage() {
+            localStorage.removeItem('ageVerified');
+            localStorage.removeItem('underageBlocked');
+            document.getElementById('message').innerHTML = '<p class="success"> localStorage limpiado! Ahora ve a <a href="http://localhost:5173" style="color: #06b6d4;">http://localhost:5173</a></p>';
+            console.log(' localStorage limpiado');
+        }
+    </script>
+</body>
+</html>

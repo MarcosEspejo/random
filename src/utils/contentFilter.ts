@@ -4,12 +4,22 @@
 const OFFENSIVE_WORDS = [
   // Palabras muy fuertes en español
   'puta', 'puto', 'verga', 'chingada', 'pendejo', 'pendeja',
-  'culero', 'culera', 'cabrón', 'cabrona', 'hijo de puta',
-  'hijueputa', 'gonorrea', 'malparido', 'malparida',
+  'culero', 'culera', 'cabrón', 'cabrona', 'cabron', 'cabrona',
+  'hijo de puta', 'hijueputa', 'hijaputa', 'hijo puta',
+  'gonorrea', 'malparido', 'malparida', 'marica', 'maricon',
+  'joder', 'coño', 'cono', 'mierda', 'carajo', 'vergas',
+  'chingar', 'chingadera', 'mamada', 'mamadas', 'pinche',
+  'perra', 'perro', 'zorra', 'zorro', 'rata', 'ratas',
+  'güey', 'guey', 'wey', 'culiao', 'huevón', 'huevon',
+  'boludo', 'pelotudo', 'concha', 'conchudo', 'choto',
   
   // Palabras fuertes en inglés
-  'fuck', 'fucking', 'bitch', 'asshole', 'shit', 'cunt',
-  'dick', 'pussy', 'cock', 'motherfucker',
+  'fuck', 'fucking', 'fucker', 'fucked', 'fck',
+  'bitch', 'bitches', 'asshole', 'assholes', 'ass',
+  'shit', 'shits', 'shitting', 'bullshit',
+  'cunt', 'dick', 'dicks', 'pussy', 'pussies',
+  'cock', 'cocks', 'motherfucker', 'bastard', 'damn',
+  'nigga', 'nigger', 'whore', 'slut', 'fag', 'faggot',
 ];
 
 // Expresiones regulares para detectar URLs
@@ -62,28 +72,26 @@ export function removeURLs(text: string): string {
 
 /**
  * Función principal para filtrar contenido de mensajes
- * Censura palabras ofensivas y elimina/bloquea URLs
+ * Censura palabras ofensivas y elimina URLs
  */
 export function filterMessageContent(text: string): {
   isBlocked: boolean;
   filteredText: string;
   reason?: string;
 } {
-  // Primero verificar si contiene URLs
-  if (containsURL(text)) {
-    return {
-      isBlocked: true,
-      filteredText: text,
-      reason: 'No se permiten links o URLs por seguridad. Por favor, evita compartir enlaces.'
-    };
+  let processedText = text;
+  
+  // Remover URLs si existen
+  if (containsURL(processedText)) {
+    processedText = removeURLs(processedText);
   }
   
   // Censurar palabras ofensivas
-  const filteredText = censorOffensiveWords(text);
+  processedText = censorOffensiveWords(processedText);
   
   return {
     isBlocked: false,
-    filteredText,
+    filteredText: processedText,
   };
 }
 

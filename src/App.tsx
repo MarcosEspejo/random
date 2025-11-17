@@ -9,8 +9,9 @@ import WelcomeScreen from './components/WelcomeScreen';
 import Header from './components/Header';
 import AnimatedBackground from './components/AnimatedBackground';
 import CountryFilter from './components/CountryFilter';
+import AgeVerificationModal from './components/AgeVerificationModal';
 import { useSocket } from './hooks/useSocket';
-import { filterMessageContent, isValidMessage } from './utils/contentFilter';
+import { filterMessageContent, isValidMessage, containsURL } from './utils/contentFilter';
 
 function App() {
   // Verificar modo mantenimiento
@@ -58,6 +59,17 @@ function App() {
       </div>
     );
   }
+  
+  const [messageInput, setMessageInput] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [showCountryFilter, setShowCountryFilter] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<{ id: number; text: string } | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  const [ageVerified, setAgeVerified] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const {
     isConnected,
     isMatched,
@@ -77,14 +89,6 @@ function App() {
     setMessageReaction,
   } = useSocket();
 
-  const [messageInput, setMessageInput] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [showCountryFilter, setShowCountryFilter] = useState(false);
-  const [replyingTo, setReplyingTo] = useState<{ id: number; text: string } | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -93,17 +97,53 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  // Sistema estricto de verificación de edad - solo durante la sesión
+  useEffect(() => {
+    const verified = sessionStorage.getItem('ageVerified');
+    if (verified === 'true') {
+      setAgeVerified(true);
+    }
+  }, []);
+
+  // Interceptar el botón atrás del navegador
+  useEffect(() => {
+    const handlePopState = () => {
+      const verified = sessionStorage.getItem('ageVerified');
+      if (verified !== 'true') {
+        // Si no está verificado, prevenir navegación y mostrar modal
+        setAgeVerified(false);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!messageInput.trim() || !isMatched) return;
+    // Prevenir múltiples envíos
+    if (isSending) {
+      return;
+    }
+    
+    if (!messageInput.trim() || !isMatched) {
+      return;
+    }
+    
+    // Bloquear inmediatamente para prevenir spam
+    setIsSending(true);
     
     // Validar longitud del mensaje
     if (!isValidMessage(messageInput)) {
       setErrorMessage('El mensaje es demasiado largo (máximo 1000 caracteres)');
       setTimeout(() => setErrorMessage(null), 3000);
+      setTimeout(() => setIsSending(false), 300);
       return;
     }
+    
+    // Detectar si contiene URL antes de filtrar
+    const hadURL = containsURL(messageInput);
     
     // Filtrar contenido del mensaje
     const { isBlocked, filteredText, reason } = filterMessageContent(messageInput);
@@ -111,7 +151,24 @@ function App() {
     if (isBlocked) {
       setErrorMessage(reason || 'Mensaje bloqueado');
       setTimeout(() => setErrorMessage(null), 5000);
+      // Desbloquear después de un tiempo para que pueda corregir el mensaje
+      setTimeout(() => setIsSending(false), 300);
       return;
+    }
+    
+    // Si después de filtrar el mensaje queda vacío o solo tiene texto de censura
+    const cleanText = filteredText.replace(/\[link removido\]/g, '').trim();
+    if (!cleanText || cleanText.length === 0) {
+      setErrorMessage('No puedes enviar solo links. Escribe un mensaje de texto.');
+      setTimeout(() => setErrorMessage(null), 3000);
+      setTimeout(() => setIsSending(false), 300);
+      return;
+    }
+    
+    // Si tenía URL, mostrar advertencia pero enviar censurado
+    if (hadURL) {
+      setErrorMessage('Los links fueron removidos por seguridad');
+      setTimeout(() => setErrorMessage(null), 3000);
     }
     
     // Enviar mensaje filtrado
@@ -126,6 +183,11 @@ function App() {
     if (textarea) {
       textarea.style.height = 'auto';
     }
+    
+    // Desbloquear después de 500ms
+    setTimeout(() => {
+      setIsSending(false);
+    }, 500);
   };
 
   const handleTyping = () => {
@@ -151,20 +213,46 @@ function App() {
   }, []);
 
   const handleConnect = () => {
-    console.log('🟢 handleConnect llamado en App.tsx');
-    console.log('🟢 Estado isConnected:', isConnected);
     connect();
   };
 
+  const handleAgeVerified = () => {
+    sessionStorage.setItem('ageVerified', 'true');
+    setAgeVerified(true);
+  };
+
+  const handleUnder18 = () => {
+    sessionStorage.removeItem('ageVerified');
+    // Redirigir y agregar entrada al historial para interceptar el botón atrás
+    window.history.pushState(null, '', window.location.href);
+    window.location.href = 'https://www.google.com/search?q=cute+cats+and+dogs&tbm=isch';
+  };
+
   if (!isConnected) {
-    console.log('⚪ Mostrando WelcomeScreen');
-    return <WelcomeScreen onStart={handleConnect} />;
+    return (
+      <>
+        <WelcomeScreen onStart={handleConnect} />
+        {!ageVerified && (
+          <AgeVerificationModal 
+            onVerified={handleAgeVerified}
+            onUnder18={handleUnder18}
+          />
+        )}
+      </>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-300 via-dark-200 to-dark-400 flex flex-col relative overflow-x-hidden">
       <AnimatedBackground />
       <Header onlineUsers={onlineUsers} />
+      
+      {!ageVerified && (
+        <AgeVerificationModal 
+          onVerified={handleAgeVerified}
+          onUnder18={handleUnder18}
+        />
+      )}
 
       <main className="flex-1 flex flex-col max-w-6xl w-full mx-auto px-4 py-6 relative z-10 overflow-x-hidden">
         <AnimatePresence mode="wait">
@@ -429,9 +517,13 @@ function App() {
                     autoFocus
                   />
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={(e) => {
+                      console.log('🖱️ Click en botón Enviar');
+                      handleSendMessage(e);
+                    }}
                     className="btn-primary flex items-center gap-2 px-4 md:px-6 h-[44px]"
-                    disabled={!messageInput.trim()}
+                    disabled={!messageInput.trim() || isSending}
                   >
                     <FiSend />
                     <span className="hidden sm:inline">Enviar</span>

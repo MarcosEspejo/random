@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiSend, FiUsers, FiSkipForward, FiLogOut } from 'react-icons/fi';
+import { FiSend, FiUsers, FiSkipForward, FiLogOut, FiAlertCircle } from 'react-icons/fi';
 import { BsChatDots } from 'react-icons/bs';
 import './index.css';
 import ChatMessage from './components/ChatMessage';
@@ -10,6 +10,7 @@ import Header from './components/Header';
 import AnimatedBackground from './components/AnimatedBackground';
 import CountryFilter from './components/CountryFilter';
 import { useSocket } from './hooks/useSocket';
+import { filterMessageContent, isValidMessage } from './utils/contentFilter';
 
 function App() {
   // Verificar modo mantenimiento
@@ -80,6 +81,7 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [showCountryFilter, setShowCountryFilter] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ id: number; text: string } | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -93,17 +95,36 @@ function App() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (messageInput.trim() && isMatched) {
-      sendMessage(messageInput, replyingTo || undefined);
-      setMessageInput('');
-      setReplyingTo(null);
-      stopTyping();
-      
-      // Resetear altura del textarea
-      const textarea = document.querySelector('textarea');
-      if (textarea) {
-        textarea.style.height = 'auto';
-      }
+    
+    if (!messageInput.trim() || !isMatched) return;
+    
+    // Validar longitud del mensaje
+    if (!isValidMessage(messageInput)) {
+      setErrorMessage('El mensaje es demasiado largo (máximo 1000 caracteres)');
+      setTimeout(() => setErrorMessage(null), 3000);
+      return;
+    }
+    
+    // Filtrar contenido del mensaje
+    const { isBlocked, filteredText, reason } = filterMessageContent(messageInput);
+    
+    if (isBlocked) {
+      setErrorMessage(reason || 'Mensaje bloqueado');
+      setTimeout(() => setErrorMessage(null), 5000);
+      return;
+    }
+    
+    // Enviar mensaje filtrado
+    sendMessage(filteredText, replyingTo || undefined);
+    setMessageInput('');
+    setReplyingTo(null);
+    setErrorMessage(null);
+    stopTyping();
+    
+    // Resetear altura del textarea
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      textarea.style.height = 'auto';
     }
   };
 
@@ -355,11 +376,26 @@ function App() {
                     </button>
                   </div>
                 )}
+                
+                {/* Error message */}
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-start gap-2 bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-sm text-red-200"
+                  >
+                    <FiAlertCircle className="text-red-400 mt-0.5 flex-shrink-0" />
+                    <span>{errorMessage}</span>
+                  </motion.div>
+                )}
+                
                 <div className="flex gap-2 md:gap-3 items-end">
                   <textarea
                     value={messageInput}
                     onChange={(e) => {
                       setMessageInput(e.target.value);
+                      setErrorMessage(null); // Limpiar error al escribir
                       
                       // Ajustar altura dinámicamente
                       e.target.style.height = '44px';

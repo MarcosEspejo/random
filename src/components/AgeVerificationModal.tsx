@@ -24,27 +24,27 @@ const AgeVerificationModal = ({ onVerified, onUnder18 }: AgeVerificationModalPro
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-dark-200/95 rounded-2xl p-8 md:p-10 max-w-lg w-full border border-gray-700/50 relative shadow-2xl">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+        <div className="bg-dark-200/95 rounded-xl sm:rounded-2xl p-5 sm:p-8 md:p-10 max-w-lg w-full border border-gray-700/50 relative shadow-2xl max-h-[90vh] overflow-y-auto">
           {/* Icono */}
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-full bg-cyan-500/10 flex items-center justify-center border-2 border-cyan-500/30">
-              <FiShield className="text-cyan-400 text-4xl" />
+          <div className="flex justify-center mb-4 sm:mb-6">
+            <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-full bg-cyan-500/10 flex items-center justify-center border-2 border-cyan-500/30">
+              <FiShield className="text-cyan-400 text-3xl sm:text-4xl" />
             </div>
           </div>
 
           {/* Título */}
-          <h2 className="text-3xl font-bold text-white text-center mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
             Verificación de Edad
           </h2>
 
           {/* Descripción */}
-          <p className="text-gray-400 text-center mb-8 text-base leading-relaxed">
+          <p className="text-gray-400 text-center mb-6 sm:mb-8 text-sm sm:text-base leading-relaxed">
             Para acceder a esta plataforma, debes confirmar que eres mayor de 18 años.
           </p>
 
           {/* Checkbox de términos */}
-          <div className="bg-dark-100/40 rounded-xl p-5 mb-8 border border-gray-700/50">
+          <div className="bg-dark-100/40 rounded-lg sm:rounded-xl p-3 sm:p-5 mb-6 sm:mb-8 border border-gray-700/50">
             <label className="flex items-start gap-3 cursor-pointer group">
               <input
                 type="checkbox"
@@ -66,16 +66,16 @@ const AgeVerificationModal = ({ onVerified, onUnder18 }: AgeVerificationModalPro
           </div>
 
           {/* Pregunta */}
-          <p className="text-white text-center font-medium mb-6 text-lg">
+          <p className="text-white text-center font-medium mb-4 sm:mb-6 text-base sm:text-lg">
             ¿Eres mayor de 18 años?
           </p>
 
           {/* Botones */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3">
             <button
               onClick={handleOver18}
               disabled={!acceptedTerms}
-              className={`w-full py-4 px-6 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 text-sm sm:text-base ${
                 acceptedTerms
                   ? 'bg-cyan-500 hover:bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
                   : 'bg-gray-700 text-gray-500 cursor-not-allowed'
@@ -86,14 +86,14 @@ const AgeVerificationModal = ({ onVerified, onUnder18 }: AgeVerificationModalPro
             </button>
             <button
               onClick={handleUnder18}
-              className="w-full py-4 px-6 rounded-xl font-semibold bg-gray-700 hover:bg-gray-600 text-gray-300 transition-all duration-200"
+              className="w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold bg-gray-700 hover:bg-gray-600 text-gray-300 transition-all duration-200 text-sm sm:text-base"
             >
               No, soy menor de 18 años
             </button>
           </div>
 
           {/* Nota de privacidad */}
-          <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
+          <p className="text-xs text-gray-500 text-center mt-4 sm:mt-6 leading-relaxed">
             Tu privacidad es importante. Esta verificación se almacena localmente y no compartimos información personal.
           </p>
         </div>
@@ -101,8 +101,8 @@ const AgeVerificationModal = ({ onVerified, onUnder18 }: AgeVerificationModalPro
 
       {/* Modal de términos y condiciones */}
       {showTerms && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-dark-200 rounded-2xl p-8 max-w-3xl w-full max-h-[85vh] overflow-y-auto border border-gray-700/50 shadow-2xl">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-dark-200 rounded-xl sm:rounded-2xl p-5 sm:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-700/50 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white">Términos y Condiciones de Uso</h2>
               <button
